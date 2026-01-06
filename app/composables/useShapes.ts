@@ -22,13 +22,13 @@ function uid() {
 
 export function useShapes() {
   const shapes = useState<Shape[]>('shapes', () => [])
-  const selectedId = useState<string | null>('selectedId', () => null)
+  const selectedToolId = useState<string | null>('selectedId', () => null)
   const activeTool = useState<Tool>('activeTool', () => 'select')
 
   console.log('shapes', shapes.value)
 
   const selectedShape = computed(() =>
-    shapes.value.find(s => s.id === selectedId.value) ?? null
+    shapes.value.find(s => s.id === selectedToolId.value) ?? null
   )
 
   function setTool(tool: Tool) {
@@ -36,7 +36,7 @@ export function useShapes() {
   }
 
   function select(id: string | null) {
-    selectedId.value = id
+    selectedToolId.value = id
   }
 
   function addShape(type: ShapeType | 'texas' | 'house', x: number, y: number) {
@@ -52,7 +52,7 @@ export function useShapes() {
       }
       console.log('addShape (icon)', shape)
       shapes.value = [...shapes.value, shape]
-      selectedId.value = shape.id
+      selectedToolId.value = shape.id
       return
     }
 
@@ -68,7 +68,7 @@ export function useShapes() {
     const shape: Shape = type === 'rect' ? { ...base, w: 90, h: 60 } : { ...base, r: 30 }
     console.log('addShape', shape)
     shapes.value = [...shapes.value, shape]
-    selectedId.value = shape.id
+    selectedToolId.value = shape.id
   }
 
   function updateShape(id: string, patch: Partial<Shape>) {
@@ -76,21 +76,21 @@ export function useShapes() {
   }
 
   function removeSelected() {
-    if (!selectedId.value) return
-    const id = selectedId.value
+    if (!selectedToolId.value) return
+    const id = selectedToolId.value
     shapes.value = shapes.value.filter(s => s.id !== id)
-    selectedId.value = null
+    selectedToolId.value = null
   }
 
   function clearAll() {
     shapes.value = []
-    selectedId.value = null
+    selectedToolId.value = null
   }
 
   return {
     // state
     shapes,
-    selectedId,
+    selectedToolId,
     activeTool,
     selectedShape,
 

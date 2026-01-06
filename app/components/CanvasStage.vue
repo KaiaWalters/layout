@@ -9,7 +9,7 @@ const { shapes, selectedId, activeTool, select, addShape, updateShape } = useSha
 
 // convert this to useState()
 
-const stageRef = ref<SVGSVGElement | null>(null)
+const stageRef = ref<SVGSVGElement | null>(null) // the actual svg stage that's pretty neat
 
 // drag state (local, transient)
 const draggingId = ref<string | null>(null)
@@ -18,9 +18,9 @@ const dragOffset = ref({ dx: 0, dy: 0 })
 function getPointFromEvent(ev: PointerEvent) {
   const svg = stageRef.value
   if (!svg) return { x: 0, y: 0 }
-
+  console.log(ev, 'event from clicking el on stage')
   const rect = svg.getBoundingClientRect()
-  const x = ev.clientX - rect.left
+  const x = ev.clientX - rect.left // determined the coordinated of the element
   const y = ev.clientY - rect.top
   return { x, y }
 }
@@ -55,6 +55,8 @@ function onShapePointerDown(shape: Shape, ev: PointerEvent) {
 
   draggingId.value = shape.id
   select(shape.id)
+
+  console.log(ev, 'event from clicking shape')
 
   const p = getPointFromEvent(ev)
 
