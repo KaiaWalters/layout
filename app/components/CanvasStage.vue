@@ -5,7 +5,7 @@ import { ref } from 'vue'
 
 // NOTE: State is retrieved and managed from a central location to avoid circular dependencies and bugs.
 
-const { shapes, selectedId, activeTool, select, addShape, updateShape } = useShapes()
+const { shapes, selectedToolId, activeTool, select, addShape, updateShape } = useShapes()
 
 // convert this to useState()
 
@@ -131,7 +131,7 @@ function onStagePointerLeave() {
           v-for="s in shapes"
           :key="s.id"
           :shape="s"
-          :selected="s.id === selectedId"
+          :selected="s.id === selectedToolId"
           @click="onShapeClick(s)"
           @pointerdown="onShapePointerDown(s, $event)"
         />

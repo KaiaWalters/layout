@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { useShapes } from '../composables/useShapes'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const { activeTool, setTool, selectedToolId, removeSelected, clearAll } = useShapes()
 const toolListOpen = ref(false)
 
+type MenuItem = {
+  id: string
+  label: string
+  tools?: MenuItem[]
+}
+
 const menuItems = [
   { id: 'select', label: 'Select' },
+  { id: 'rect', label: 'Rect' },
   {
     id: 'shapes',
     label: 'Shapes',
@@ -17,11 +24,32 @@ const menuItems = [
       { id: 'house', label: 'House' }
     ]
   }
-] as const
+] as MenuItem[]
 
 function openShapesMenu() {
-  console.log('openShapesMenu')
+  console.log('the tool menu is cahnged ')
+  toolListOpen.value = !toolListOpen.value
 }
+
+function handleToolSelect(toolId: string) {
+  setTool(toolId as 'select' | 'rect' | 'circle' | 'texas' | 'house')
+}
+
+// Get the shapes tools with onSelect handlers
+const shapesTools = computed(() => {
+  const shapesItem = menuItems.find(tool => tool.id === 'shapes')
+  if (!shapesItem?.tools) return []
+
+  return shapesItem.tools.map(tool => ({
+    ...tool,
+    onSelect: () => {
+      setTool(tool.id as 'rect' | 'circle' | 'texas' | 'house')
+      toolListOpen.value = false
+    }
+  }))
+})
+
+console.log(shapesTools, 'Shapes tools')
 </script>
 
 <template>
@@ -34,17 +62,19 @@ function openShapesMenu() {
         :class="activeTool === tool.id
           ? 'border-neutral-900 bg-neutral-900 text-white'
           : 'border-neutral-200 bg-white hover:bg-neutral-50'"
-        @click="setTool(tool.id)"
+        @click="handleToolSelect(tool.id)"
       >
         {{ tool.label }}
       </button>
 
       <UDropdownMenu
-        v-if="toolListOpen"
         v-slot="{ open }"
+        :open="toolListOpen"
         :modal="false"
-        :items="menuItems.find(tool => tool.id === 'shapes')?.tools"
+        :items="{ shapesTools }"
+        @update:open="toolListOpen = $event"
       >
+        <!-- I dont think that the items are the correct type and are not being referenced from the computed proprty correctly -->
         <UButton
           label="Shapes"
           variant="subtle"
@@ -53,6 +83,7 @@ function openShapesMenu() {
           class="-mb-[6px] font-semibold rounded-full truncate"
           :class="[open && 'bg-primary/15']"
           :ui="{ trailingIcon: ['transition-transform duration-200', open ? 'rotate-180' : undefined].filter(Boolean).join(' ') }"
+          @click="openShapesMenu"
         />
       </UDropdownMenu>
     </div>
